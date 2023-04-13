@@ -13,7 +13,7 @@ import { AlchemyApi } from "../services/alchemy.api";
 //==================================================================================================
 // Types
 //==================================================================================================
-enum UserModel_Functions {
+const enum UserModel_Functions {
     getUserAll = 1,
     getUser = 2
 }
