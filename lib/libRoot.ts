@@ -8,7 +8,7 @@ interface JsonFormat {
     status: JsonFormatStatus;
     message: string;
     data: any;
-};
+}
 
 function getResponse(status: JsonFormatStatus, message: string, data: any): JsonFormat {
     const response: JsonFormat = {

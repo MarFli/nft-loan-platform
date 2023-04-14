@@ -27,30 +27,30 @@ import { App } from "./src/app";
 dotenv.config()
 
 // Prepare Variables
-const port: number              = Number(process.env.PORT!);
-const app_CorsOrigin: string    = process.env.APP_CORS_ORIGIN!;
+const port: number                      = Number(process.env.PORT!);
+const app_CorsOrigin: string            = process.env.APP_CORS_ORIGIN!;
 
-const alchemy_ApiKey: string    = process.env.ALCHEMY_API_KEY!;
-const alchemy_Network: string   = process.env.ALCHEMY_NETWORK!;
+const alchemy_ApiKey: string            = process.env.ALCHEMY_API_KEY!;
+const alchemy_Network: string           = process.env.ALCHEMY_NETWORK!;
 
-const mySql_Host: string        = process.env.MYSQL_HOST!;
-const mySql_User: string        = process.env.MYSQL_USER!;
-const mySql_Password: string    = process.env.MYSQL_PASSWORD!;
-const mySql_Database: string    = process.env.MYSQL_DATABASE!;
+const mySql_Host: string                = process.env.MYSQL_HOST!;
+const mySql_User: string                = process.env.MYSQL_USER!;
+const mySql_Password: string            = process.env.MYSQL_PASSWORD!;
+const mySql_Database: string            = process.env.MYSQL_DATABASE!;
 
 // Prepare Objects
-const alchemyApi                = new AlchemyApi(alchemy_ApiKey, alchemy_Network);
-const mySqlApi                  = new MySqlApi(mySql_Host, mySql_User, mySql_Password, mySql_Database);
+const alchemyApi: AlchemyApi            = new AlchemyApi(alchemy_ApiKey, alchemy_Network);
+const mySqlApi: MySqlApi                = new MySqlApi(mySql_Host, mySql_User, mySql_Password, mySql_Database);
 
-const nftModel                  = new NftModel(alchemyApi, mySqlApi);
-const nftController             = new NftController(nftModel);
-const nftRouter                 = new NftRouter(nftController);
-const userModel                 = new UserModel(alchemyApi, mySqlApi);
-const userController            = new UserController(userModel);
-const userRouter                = new UserRouter(userController);
+const nftModel: NftModel                = new NftModel(alchemyApi, mySqlApi);
+const nftController: NftController      = new NftController(nftModel);
+const nftRouter: NftRouter              = new NftRouter(nftController);
+const userModel: UserModel              = new UserModel(alchemyApi, mySqlApi);
+const userController: UserController    = new UserController(userModel);
+const userRouter: UserRouter            = new UserRouter(userController);
 
-const app                       = new App(app_CorsOrigin, nftRouter, userRouter);
-const server                    = http.createServer(app.getApp());
+const app: App                          = new App(app_CorsOrigin, nftRouter, userRouter);
+const server: http.Server               = http.createServer(app.getApp());
 
 // Server
 function startServer(): void {
