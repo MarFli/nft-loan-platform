@@ -12,30 +12,16 @@ import mysql, { Pool, RowDataPacket, OkPacket } from "mysql2";
 //==================================================================================================
 // Types
 //==================================================================================================
-interface IUsersCheck extends RowDataPacket {
-    id: number;
-    address: string;
-}
-
-interface INftCheck extends RowDataPacket {
-    address: string;
-    token_id: string;
-}
-
-interface IsUserInDatabase {
-    id: number;
-    isUserInDatabase: boolean;
-}
-
-
 interface MySqlApi_User extends RowDataPacket {
     id: number;
     address: string;
     num_nfts: number;
 }
-interface MySqlApi_UserCheck extends RowDataPacket {    // TODO Tu fuka kak zaj tote checke naredi pa kiri tip naj vrne
+
+interface MySqlApi_UserCheck extends RowDataPacket {
     id: number;
     address: string;
+    isUserInDatabase: boolean;
 }
 
 interface MySqlApi_Nft extends RowDataPacket {
@@ -46,6 +32,7 @@ interface MySqlApi_Nft extends RowDataPacket {
     loan: boolean;
     expired: boolean;
 }
+
 interface MySqlApi_NftCheck extends RowDataPacket {
     address: string;
     token_id: string;
@@ -60,7 +47,7 @@ interface IMySqlApi {
     mySqlApi_createUser(userAddr: string, num_nfts: number): Promise<number>;
     mySqlApi_readUserAll(): Promise<MySqlApi_User[]>;
     mySqlApi_readUser(userId: number): Promise<MySqlApi_User[]>;
-    mySqlApi_isUserInDatabase(userAddr: string): Promise<IsUserInDatabase>;
+    mySqlApi_isUserInDatabase(userAddr: string): Promise<MySqlApi_UserCheck>;
 
     // "erc721_tokens" Table
     mySqlApi_createNft(nftAddr: string, tokenId: string, userId: number): Promise<number>;
@@ -160,14 +147,9 @@ class MySqlApi implements IMySqlApi {
         });
     }
 
-    public mySqlApi_isUserInDatabase(userAddr: string): Promise<IsUserInDatabase> {
-        const data: IsUserInDatabase = {
-            id: 0,
-            isUserInDatabase: false
-        };
-
+    public mySqlApi_isUserInDatabase(userAddr: string): Promise<MySqlApi_UserCheck> {
         return new Promise((resolve, reject) => {
-            this.pool.query<IUsersCheck[]>(
+            this.pool.query<MySqlApi_UserCheck[]>(
                 `SELECT id, address FROM users WHERE address = ?;`,
                 [userAddr],
                 (error, results) => {
@@ -176,11 +158,17 @@ class MySqlApi implements IMySqlApi {
                     } else {
                         if (results.length !== 0) {
                             if (results[0]["address"] === userAddr) {
-                                data.id = Number(results[0]["id"]);
-                                data.isUserInDatabase = true;
+                                results[0]["isUserInDatabase"] = true;
                             }
+                        } else {
+                            results.push({
+                                constructor: { name: "RowDataPacket"},
+                                id: 0,
+                                address: "",
+                                isUserInDatabase: false
+                            });
                         }
-                        resolve(data);
+                        resolve(results[0]);
                     }
                 }
             );
@@ -223,7 +211,7 @@ class MySqlApi implements IMySqlApi {
         let isNftInDatabase: boolean = false
 
         return new Promise((resolve, reject) => {
-            this.pool.query<INftCheck[]>(
+            this.pool.query<MySqlApi_NftCheck[]>(
                 `SELECT address, token_id FROM erc721_tokens WHERE address = ?;`,
                 [nftAddr, tokenId],
                 (error, results) => {

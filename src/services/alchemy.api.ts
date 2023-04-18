@@ -12,13 +12,13 @@ import { Alchemy, OwnedNftsResponse, AlchemySettings, Network } from "alchemy-sd
 //==================================================================================================
 // Types
 //==================================================================================================
-interface IGetNftsForOwner_Nft {
+interface AlchemyApi_Nft {
     nftAddr: string;
     tokenId: string;
 }
 
-interface IGetNftsForOwner {
-    nftAddrArr: IGetNftsForOwner_Nft[];
+interface AlchemyApi_OwnerNfts {
+    nftAddrArr: AlchemyApi_Nft[];
     numOfNfts: number;
 }
 
@@ -27,7 +27,7 @@ interface IGetNftsForOwner {
 // Intrerface
 //==================================================================================================
 interface IAlchemyApi {
-    alchemyApi_getNftsForOwner(nftAddr: string): Promise<IGetNftsForOwner>;
+    alchemyApi_getNftsForOwner(nftAddr: string): Promise<AlchemyApi_OwnerNfts>;
 }
 
 
@@ -66,22 +66,22 @@ class AlchemyApi implements IAlchemyApi {
     //--------------------------
     // Public Functions
     //--------------------------
-    public async alchemyApi_getNftsForOwner(nftAddr: string): Promise<IGetNftsForOwner> {
-        const response: OwnedNftsResponse = await this.alchemyObj.nft.getNftsForOwner(nftAddr)
+    public async alchemyApi_getNftsForOwner(nftAddr: string): Promise<AlchemyApi_OwnerNfts> {
+        const response: OwnedNftsResponse = await this.alchemyObj.nft.getNftsForOwner(nftAddr);
 
         const numOfNfts: number = Number(response["totalCount"]);
-        let nftArr: IGetNftsForOwner_Nft[] = [];
+        let nftArr: AlchemyApi_Nft[] = [];
 
         for (let i = 0; i < numOfNfts; i++) {
-            const dummy: IGetNftsForOwner_Nft = {
+            const dummy: AlchemyApi_Nft = {
                 nftAddr: response["ownedNfts"][i]["contract"]["address"],
                 tokenId: response["ownedNfts"][i]["tokenId"]
-            }
+            };
 
             nftArr.push(dummy);
         }
 
-        const data: IGetNftsForOwner = {
+        const data: AlchemyApi_OwnerNfts = {
             nftAddrArr: nftArr,
             numOfNfts: numOfNfts
         };
@@ -94,4 +94,4 @@ class AlchemyApi implements IAlchemyApi {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { AlchemyApi, IGetNftsForOwner };
+export { AlchemyApi, AlchemyApi_OwnerNfts };

@@ -7,10 +7,10 @@ const enum JsonFormatStatus {
 interface JsonFormat {
     status: JsonFormatStatus;
     message: string;
-    data: any;
+    data: object;
 }
 
-function getResponse(status: JsonFormatStatus, message: string, data: any): JsonFormat {
+function getResponse(status: JsonFormatStatus, message: string, data: object): JsonFormat {
     const response: JsonFormat = {
         status: status,
         message: message,

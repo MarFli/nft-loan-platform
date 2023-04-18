@@ -7,7 +7,7 @@
 
 // Application
 import { MySqlApi, MySqlApi_Nft } from "../services/mySql.api";
-import { AlchemyApi, IGetNftsForOwner } from "../services/alchemy.api";
+import { AlchemyApi, AlchemyApi_OwnerNfts } from "../services/alchemy.api";
 
 
 //==================================================================================================
@@ -15,7 +15,7 @@ import { AlchemyApi, IGetNftsForOwner } from "../services/alchemy.api";
 //==================================================================================================
 interface INftModel {
     getNftAll(): Promise<MySqlApi_Nft[]>;
-    getNft(userAddr: string): Promise<IGetNftsForOwner>;
+    getNft(userAddr: string): Promise<AlchemyApi_OwnerNfts>;
 }
 
 
@@ -57,7 +57,7 @@ class NftModel implements INftModel {
         }
     }
 
-    public async getNft(userAddr: string): Promise<IGetNftsForOwner> {
+    public async getNft(userAddr: string): Promise<AlchemyApi_OwnerNfts> {
         // Predpostavljamo da je user valid, kr se ne more majster vpisat na platformo z nevalid addresso
         const nftData = await this.alchemyApi.alchemyApi_getNftsForOwner(userAddr);
         const userData = await this.mySqlApi.mySqlApi_isUserInDatabase(userAddr);

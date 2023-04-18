@@ -57,8 +57,6 @@ class UserModel implements IUserModel{
         try {
             if (func === UserModel_Functions.getUserAll){
                 funcResponse = await this.mySqlApi.mySqlApi_readUserAll();
-                // const x = await this.mySqlApi.mySqlApi_readUserAll();
-                // console.log(x);
             } else if (func === UserModel_Functions.getUser) {
                 funcResponse = await this.mySqlApi.mySqlApi_readUser(userId);
             }
