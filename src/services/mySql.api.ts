@@ -79,7 +79,7 @@ class MySqlApi implements IMySqlApi {
     protected host: string;
     protected user: string;
     protected password: string;
-    protected database: string;     // Might be string[] if we will have multiple databases
+    protected database: string;     // MF: Might be string[] if we will have multiple databases
     protected pool: Pool
 
 
