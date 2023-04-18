@@ -12,12 +12,6 @@ import mysql, { Pool, RowDataPacket, OkPacket } from "mysql2";
 //==================================================================================================
 // Types
 //==================================================================================================
-interface IUsers extends RowDataPacket {
-    id: number;
-    address: string;
-    num_nfts: number;
-}
-
 interface IUsersCheck extends RowDataPacket {
     id: number;
     address: string;
@@ -33,13 +27,28 @@ interface IsUserInDatabase {
     isUserInDatabase: boolean;
 }
 
-interface INfts extends RowDataPacket {
+
+interface MySqlApi_User extends RowDataPacket {
+    id: number;
+    address: string;
+    num_nfts: number;
+}
+interface MySqlApi_UserCheck extends RowDataPacket {    // TODO Tu fuka kak zaj tote checke naredi pa kiri tip naj vrne
+    id: number;
+    address: string;
+}
+
+interface MySqlApi_Nft extends RowDataPacket {
     id: number;
     address: string;
     token_id: string;
     owner_user_id: string;
     loan: boolean;
     expired: boolean;
+}
+interface MySqlApi_NftCheck extends RowDataPacket {
+    address: string;
+    token_id: string;
 }
 
 
@@ -49,13 +58,13 @@ interface INfts extends RowDataPacket {
 interface IMySqlApi {
     // "users" Table
     mySqlApi_createUser(userAddr: string, num_nfts: number): Promise<number>;
-    mySqlApi_readUserAll(): Promise<string>;    // Promise<IUsers[]>
-    mySqlApi_readUser(userId: number): Promise<string>;   // Promise<IUsers[]>
+    mySqlApi_readUserAll(): Promise<MySqlApi_User[]>;
+    mySqlApi_readUser(userId: number): Promise<MySqlApi_User[]>;
     mySqlApi_isUserInDatabase(userAddr: string): Promise<IsUserInDatabase>;
 
     // "erc721_tokens" Table
     mySqlApi_createNft(nftAddr: string, tokenId: string, userId: number): Promise<number>;
-    mySqlApi_readNftAll(): Promise<string>;    // Promise<INfts[]>
+    mySqlApi_readNftAll(): Promise<MySqlApi_Nft[]>;
     mySqlApi_isNftInDatabase(nftAddr: string, tokenId: string): Promise<boolean>;
 }
 
@@ -116,24 +125,24 @@ class MySqlApi implements IMySqlApi {
         });
     }
 
-    public mySqlApi_readUserAll(): Promise<string> {    // Promise<IUsers[]>
+    public mySqlApi_readUserAll(): Promise<MySqlApi_User[]> {
         return new Promise((resolve, reject) => {
-            this.pool.query<IUsers[]>(
+            this.pool.query<MySqlApi_User[]>(
                 "SELECT * FROM users;",
                 (error, results) => {
                     if (error) {
                         reject(error);
                     } else {
-                        resolve(JSON.stringify(results));
+                        resolve(results);
                     }
                 }
             );
         });
     }
 
-    public mySqlApi_readUser(userId: number): Promise<string> {   // Promise<IUsers[]>
+    public mySqlApi_readUser(userId: number): Promise<MySqlApi_User[]> {
         return new Promise((resolve, reject) => {
-            this.pool.query<IUsers[]>(
+            this.pool.query<MySqlApi_User[]>(
                 "SELECT * FROM users WHERE id = ?;",
                 [userId],
                 (error, results) => {
@@ -143,7 +152,7 @@ class MySqlApi implements IMySqlApi {
                         if (results.length === 0) {
                             reject({message: `User with an id '${userId}' doesn't exist`})
                         } else {
-                            resolve(JSON.stringify(results));
+                            resolve(results);
                         }
                     }
                 }
@@ -195,15 +204,15 @@ class MySqlApi implements IMySqlApi {
         });
     }
 
-    public mySqlApi_readNftAll(): Promise<string> {    // Promise<INfts[]>
+    public mySqlApi_readNftAll(): Promise<MySqlApi_Nft[]> {
         return new Promise((resolve, reject) => {
-            this.pool.query<INfts[]>(
+            this.pool.query<MySqlApi_Nft[]>(
                 "SELECT * FROM erc721_tokens;",
                 (error, results) => {
                     if (error) {
                         reject(error);
                     } else {
-                        resolve(JSON.stringify(results));
+                        resolve(results);
                     }
                 }
             );
@@ -238,4 +247,4 @@ class MySqlApi implements IMySqlApi {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { MySqlApi };
+export { MySqlApi, MySqlApi_User, MySqlApi_Nft };

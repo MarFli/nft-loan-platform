@@ -6,7 +6,7 @@
 // Third Party
 
 // Application
-import { MySqlApi } from "../services/mySql.api";
+import { MySqlApi, MySqlApi_Nft } from "../services/mySql.api";
 import { AlchemyApi, IGetNftsForOwner } from "../services/alchemy.api";
 
 
@@ -14,7 +14,7 @@ import { AlchemyApi, IGetNftsForOwner } from "../services/alchemy.api";
 // Intrerface
 //==================================================================================================
 interface INftModel {
-    getNftAll(): Promise<string>;
+    getNftAll(): Promise<MySqlApi_Nft[]>;
     getNft(userAddr: string): Promise<IGetNftsForOwner>;
 }
 
@@ -45,8 +45,8 @@ class NftModel implements INftModel {
     //--------------------------
     // Public Functions
     //--------------------------
-    public async getNftAll(): Promise<string> {
-        let funcResponse:string = "";
+    public async getNftAll(): Promise<MySqlApi_Nft[]> {
+        let funcResponse: MySqlApi_Nft[] = [];
 
         try {
             funcResponse = await this.mySqlApi.mySqlApi_readNftAll()

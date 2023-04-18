@@ -16,8 +16,8 @@ import { UserModel } from "../models/user.mod";
 // Intrerface
 //==================================================================================================
 interface IUserController {
-    httpGetUserAll(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;   // MF: TODO Understand this return type
-    httpGetUser(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
+    httpGetUserAll(req: Request, res: Response): Promise<void>;
+    httpGetUser(req: Request, res: Response): Promise<void>;
 }
 
 
@@ -42,36 +42,36 @@ class UserController implements IUserController {
     //--------------------------
     // Public Functions
     //--------------------------
-    public async httpGetUserAll(req: Request, res: Response): Promise<Response<any, Record<string, any>>> {
+    public async httpGetUserAll(req: Request, res: Response): Promise<void> {
         let response: JsonFormat;
 
         try {
             const users = await this.userModel.getUserAll();
 
-            response = getResponse(JsonFormatStatus.SUCCESS, "", JSON.parse(users));
+            response = getResponse(JsonFormatStatus.SUCCESS, "", users);
 
-            return res.status(200).json(response);
+            res.status(200).json(response);
         } catch (err: any) {
             response = getResponse(JsonFormatStatus.ERROR, String(err.message), []);
 
-            return res.status(500).json(response);
+            res.status(500).json(response);
         }
     }
 
-    public async httpGetUser(req: Request, res: Response): Promise<Response<any, Record<string, any>>> {
+    public async httpGetUser(req: Request, res: Response): Promise<void> {
         let response: JsonFormat;
 
         try {
             const userId = Number(req.params.userId);
             const user = await this.userModel.getUser(userId)
 
-            response = getResponse(JsonFormatStatus.SUCCESS, "", JSON.parse(user));
+            response = getResponse(JsonFormatStatus.SUCCESS, "", user);
 
-            return res.status(200).json(response);
+            res.status(200).json(response);
         } catch (err: any) {
             response = getResponse(JsonFormatStatus.ERROR, String(err.message), []);
 
-            return res.status(500).json(response);
+            res.status(500).json(response);
         }
     }
 }
