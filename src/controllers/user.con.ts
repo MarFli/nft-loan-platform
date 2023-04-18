@@ -7,15 +7,24 @@
 import { Request, Response } from "express";
 
 // Application
-import { JsonFormatStatus, JsonFormat, getResponse } from "../../lib/libRoot";
+import { JsonFormatStatus, type JsonFormat, getResponse } from "../../lib/libRoot";
 
 import { UserModel } from "../models/user.mod";
 
 
 //==================================================================================================
+// Intrerface
+//==================================================================================================
+interface IUserController {
+    httpGetUserAll(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;   // MF: TODO Understand this return type
+    httpGetUser(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
+}
+
+
+//==================================================================================================
 // Functions
 //==================================================================================================
-class UserController {
+class UserController implements IUserController {
     //--------------------------
     // Propeties
     //--------------------------
@@ -33,7 +42,7 @@ class UserController {
     //--------------------------
     // Public Functions
     //--------------------------
-    public async httpGetUserAll(req: Request, res: Response) {
+    public async httpGetUserAll(req: Request, res: Response): Promise<Response<any, Record<string, any>>> {
         let response: JsonFormat;
 
         try {
@@ -49,7 +58,7 @@ class UserController {
         }
     }
 
-    public async httpGetUser(req: Request, res: Response) {
+    public async httpGetUser(req: Request, res: Response): Promise<Response<any, Record<string, any>>> {
         let response: JsonFormat;
 
         try {

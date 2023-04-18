@@ -20,9 +20,18 @@ const enum UserModel_Functions {
 
 
 //==================================================================================================
+// Intrerface
+//==================================================================================================
+interface IUserModel {
+    getUserAll(): Promise<string>;
+    getUser(userId: number): Promise<string>;
+}
+
+
+//==================================================================================================
 // Class
 //==================================================================================================
-class UserModel {
+class UserModel implements IUserModel{
     //--------------------------
     // Propeties
     //--------------------------
@@ -33,10 +42,7 @@ class UserModel {
     //--------------------------
     // Ctor
     //--------------------------
-    constructor(
-        alchemyApi: AlchemyApi,
-        mySqlApi: MySqlApi
-    ) {
+    constructor(alchemyApi: AlchemyApi, mySqlApi: MySqlApi) {
         this.alchemyApi = alchemyApi;
         this.mySqlApi = mySqlApi;
     }

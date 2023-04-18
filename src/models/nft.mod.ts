@@ -6,16 +6,23 @@
 // Third Party
 
 // Application
-import { JsonFormatStatus, JsonFormat, getResponse } from "../../lib/libRoot";
-
 import { MySqlApi } from "../services/mySql.api";
 import { AlchemyApi, IGetNftsForOwner } from "../services/alchemy.api";
 
 
 //==================================================================================================
+// Intrerface
+//==================================================================================================
+interface INftModel {
+    getNftAll(): Promise<string>;
+    getNft(userAddr: string): Promise<IGetNftsForOwner>;
+}
+
+
+//==================================================================================================
 // Class
 //==================================================================================================
-class NftModel {
+class NftModel implements INftModel {
     //--------------------------
     // Propeties
     //--------------------------

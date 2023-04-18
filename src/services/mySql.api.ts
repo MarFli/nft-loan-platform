@@ -10,7 +10,7 @@ import mysql, { Pool, RowDataPacket, OkPacket } from "mysql2";
 
 
 //==================================================================================================
-// Intrerfaces
+// Types
 //==================================================================================================
 interface IUsers extends RowDataPacket {
     id: number;
@@ -44,9 +44,26 @@ interface INfts extends RowDataPacket {
 
 
 //==================================================================================================
+// Intrerface
+//==================================================================================================
+interface IMySqlApi {
+    // "users" Table
+    mySqlApi_createUser(userAddr: string, num_nfts: number): Promise<number>;
+    mySqlApi_readUserAll(): Promise<string>;    // Promise<IUsers[]>
+    mySqlApi_readUser(userId: number): Promise<string>;   // Promise<IUsers[]>
+    mySqlApi_isUserInDatabase(userAddr: string): Promise<IsUserInDatabase>;
+
+    // "erc721_tokens" Table
+    mySqlApi_createNft(nftAddr: string, tokenId: string, userId: number): Promise<number>;
+    mySqlApi_readNftAll(): Promise<string>;    // Promise<INfts[]>
+    mySqlApi_isNftInDatabase(nftAddr: string, tokenId: string): Promise<boolean>;
+}
+
+
+//==================================================================================================
 // Class
 //==================================================================================================
-class MySqlApi {
+class MySqlApi implements IMySqlApi {
     //--------------------------
     // Propeties
     //--------------------------

@@ -13,9 +13,18 @@ import { NftModel } from "../models/nft.mod";
 
 
 //==================================================================================================
+// Intrerface
+//==================================================================================================
+interface INftController {
+    httpGetNftAll(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;   // MF: TODO Understand this return type
+    httpGetNft(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
+}
+
+
+//==================================================================================================
 // Functions
 //==================================================================================================
-class NftController {
+class NftController implements INftController {
     //--------------------------
     // Propeties
     //--------------------------
@@ -33,7 +42,7 @@ class NftController {
     //--------------------------
     // Public Functions
     //--------------------------
-    public async httpGetNftAll(req: Request, res: Response) {
+    public async httpGetNftAll(req: Request, res: Response): Promise<Response<any, Record<string, any>>> {
         let response: JsonFormat;
 
         try {
@@ -49,7 +58,7 @@ class NftController {
         }
     }
 
-    public async httpGetNft(req: Request, res: Response) {  // TODO
+    public async httpGetNft(req: Request, res: Response): Promise<Response<any, Record<string, any>>> {  // TODO
         const userAddr = req.params.userAddr;
         const nft = await this.nftModel.getNft(userAddr)
 
