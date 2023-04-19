@@ -10,6 +10,7 @@ import { Request, Response } from "express";
 import { JsonFormatStatus, type JsonFormat, getResponse } from "../../lib/libRoot";
 
 import { NftModel } from "../models/nft.mod";
+import { Nft_Functions } from "../types/nft.types";
 
 
 //==================================================================================================
@@ -22,7 +23,7 @@ interface INftController {
 
 
 //==================================================================================================
-// Functions
+// Class
 //==================================================================================================
 class NftController implements INftController {
     //--------------------------
@@ -40,15 +41,22 @@ class NftController implements INftController {
 
 
     //--------------------------
-    // Public Functions
+    // Private Functions
     //--------------------------
-    public async httpGetNftAll(req: Request, res: Response): Promise<void> {
-        let response: JsonFormat;
+    private async _requestHandler(req: Request, res: Response, func: Nft_Functions): Promise<void> {
+        let response: JsonFormat = getResponse(JsonFormatStatus.ERROR, "", []);
 
         try {
-            const nfts = await this.nftModel.getNftAll();
+            if (func === Nft_Functions.GetNftAll){
+                const nfts = await this.nftModel.getNftAll();
 
-            response = getResponse(JsonFormatStatus.SUCCESS, "", nfts);
+                response = getResponse(JsonFormatStatus.SUCCESS, "", nfts);
+            } else if (func === Nft_Functions.GetNft) {
+                const userAddr = req.params.userAddr;
+                const nft = await this.nftModel.getNft(userAddr)
+    
+                response = getResponse(JsonFormatStatus.SUCCESS, "", nft);
+            }
 
             res.status(200).json(response);
         } catch (err: any) {
@@ -58,22 +66,17 @@ class NftController implements INftController {
         }
     }
 
-    public async httpGetNft(req: Request, res: Response): Promise<void> {
-        let response: JsonFormat;
-
-        try {
-            const userAddr = req.params.userAddr;
-            const nft = await this.nftModel.getNft(userAddr)
-
-            response = getResponse(JsonFormatStatus.SUCCESS, "", nft);
-
-            res.status(200).json(nft);
-        } catch (err: any) {
-            response = getResponse(JsonFormatStatus.ERROR, String(err.message), []);
-
-            res.status(500).json(response);
-        }
+    //--------------------------
+    // Public Functions
+    //--------------------------
+    public async httpGetNftAll(req: Request, res: Response): Promise<void> {
+        this._requestHandler(req, res, Nft_Functions.GetNftAll);
     }
+
+    public async httpGetNft(req: Request, res: Response): Promise<void> {
+        this._requestHandler(req, res, Nft_Functions.GetNft);
+    }
+
 }
 
 

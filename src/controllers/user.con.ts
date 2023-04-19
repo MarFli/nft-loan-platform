@@ -10,6 +10,7 @@ import { Request, Response } from "express";
 import { JsonFormatStatus, type JsonFormat, getResponse } from "../../lib/libRoot";
 
 import { UserModel } from "../models/user.mod";
+import { User_Functions } from "../types/user.types";
 
 
 //==================================================================================================
@@ -22,7 +23,7 @@ interface IUserController {
 
 
 //==================================================================================================
-// Functions
+// Class
 //==================================================================================================
 class UserController implements IUserController {
     //--------------------------
@@ -40,15 +41,22 @@ class UserController implements IUserController {
 
 
     //--------------------------
-    // Public Functions
+    // Private Functions
     //--------------------------
-    public async httpGetUserAll(req: Request, res: Response): Promise<void> {
-        let response: JsonFormat;
+    private async _requestHandler(req: Request, res: Response, func: User_Functions): Promise<void> {
+        let response: JsonFormat = getResponse(JsonFormatStatus.ERROR, "", []);
 
         try {
-            const users = await this.userModel.getUserAll();
+            if (func === User_Functions.GetUserAll){
+                const users = await this.userModel.getUserAll();
 
-            response = getResponse(JsonFormatStatus.SUCCESS, "", users);
+                response = getResponse(JsonFormatStatus.SUCCESS, "", users);
+            } else if (func === User_Functions.GetUser) {
+                const userId = Number(req.params.userId);
+                const user = await this.userModel.getUser(userId)
+
+                response = getResponse(JsonFormatStatus.SUCCESS, "", user);
+            }
 
             res.status(200).json(response);
         } catch (err: any) {
@@ -58,21 +66,15 @@ class UserController implements IUserController {
         }
     }
 
+    //--------------------------
+    // Public Functions
+    //--------------------------
+    public async httpGetUserAll(req: Request, res: Response): Promise<void> {
+        this._requestHandler(req, res, User_Functions.GetUserAll);
+    }
+
     public async httpGetUser(req: Request, res: Response): Promise<void> {
-        let response: JsonFormat;
-
-        try {
-            const userId = Number(req.params.userId);
-            const user = await this.userModel.getUser(userId)
-
-            response = getResponse(JsonFormatStatus.SUCCESS, "", user);
-
-            res.status(200).json(response);
-        } catch (err: any) {
-            response = getResponse(JsonFormatStatus.ERROR, String(err.message), []);
-
-            res.status(500).json(response);
-        }
+        this._requestHandler(req, res, User_Functions.GetUser);
     }
 }
 
