@@ -6,7 +6,7 @@
 // Third Party
 
 // Application
-import { MySqlApi, MySqlApi_Nft } from "../services/mySql.api";
+import { MySqlApi, MySqlApi_UserCheck, MySqlApi_Nft } from "../services/mySql.api";
 import { AlchemyApi, AlchemyApi_OwnerNfts } from "../services/alchemy.api";
 
 
@@ -57,40 +57,44 @@ class NftModel implements INftModel {
         }
     }
 
-    public async getNft(userAddr: string): Promise<AlchemyApi_OwnerNfts> {
+    public async getNft(userAddr: string): Promise<AlchemyApi_OwnerNfts> {  // MF: TODO Algorithm doesn't work well (no updates of NFTs, users,...)
         // Predpostavljamo da je user valid, kr se ne more majster vpisat na platformo z nevalid addresso
-        const nftData = await this.alchemyApi.alchemyApi_getNftsForOwner(userAddr);
-        const userData = await this.mySqlApi.mySqlApi_isUserInDatabase(userAddr);
+        const nftData: AlchemyApi_OwnerNfts = await this.alchemyApi.alchemyApi_getNftsForOwner(userAddr);
+        const userData: MySqlApi_UserCheck = await this.mySqlApi.mySqlApi_isUserInDatabase(userAddr);
 
-        if (userData.isUserInDatabase === false) {
-            const createUserId = await this.mySqlApi.mySqlApi_createUser(userAddr, nftData.numOfNfts);
-            userData.id = createUserId;
-        }
-
-        for (let i = 0; i < nftData.numOfNfts; i++) {
-            // Check if NFT is in data base
-            const isNftInDatabase = await this.mySqlApi.mySqlApi_isNftInDatabase(
-                nftData.nftAddrArr[i].nftAddr,
-                nftData.nftAddrArr[i].tokenId
-            );
-
-            // Add NFT to DB if it doesn't exist
-            if (!isNftInDatabase) {
-                this.mySqlApi.mySqlApi_createNft(
-                    nftData.nftAddrArr[i].nftAddr,
-                    nftData.nftAddrArr[i].tokenId,
-                    userData.id
-                );
+        try {
+            if (userData.isUserInDatabase === false) {
+                const createUserId: number = await this.mySqlApi.mySqlApi_createUser(userAddr, nftData.numOfNfts);
+                userData.id = createUserId;
             }
+
+            for (let i = 0; i < nftData.numOfNfts; i++) {
+                // Check if NFT is in data base
+                const isNftInDatabase: boolean = await this.mySqlApi.mySqlApi_isNftInDatabase(
+                    nftData.nftAddrArr[i].nftAddr,
+                    nftData.nftAddrArr[i].tokenId
+                );
+
+                // Add NFT to DB if it doesn't exist
+                if (!isNftInDatabase) {
+                    this.mySqlApi.mySqlApi_createNft(
+                        nftData.nftAddrArr[i].nftAddr,
+                        nftData.nftAddrArr[i].tokenId,
+                        userData.id
+                    );
+                }
+            }
+            // 1. poglej ce je v bazi
+            // 2. ce ni ga dodaj
+            // 3. ce je poglej ce je enak
+            // 4. ce ni updejtaj
+
+            //console.log(nftData);
+
+            return nftData;
+        } catch (err: any) {
+            throw err;
         }
-        // 1. poglej ce je v bazi
-        // 2. ce ni ga dodaj
-        // 3. ce je poglej ce je enak
-        // 4. ce ni updejtaj
-
-        //console.log(nftData);
-
-        return nftData;
     }
 }
 

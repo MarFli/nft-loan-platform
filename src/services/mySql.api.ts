@@ -235,4 +235,4 @@ class MySqlApi implements IMySqlApi {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { MySqlApi, MySqlApi_User, MySqlApi_Nft };
+export { MySqlApi, MySqlApi_User, MySqlApi_UserCheck, MySqlApi_Nft };

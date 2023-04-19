@@ -58,11 +58,21 @@ class NftController implements INftController {
         }
     }
 
-    public async httpGetNft(req: Request, res: Response): Promise<void> {  // TOOD
-        const userAddr = req.params.userAddr;
-        const nft = await this.nftModel.getNft(userAddr)
+    public async httpGetNft(req: Request, res: Response): Promise<void> {
+        let response: JsonFormat;
 
-        res.status(200).json(nft);
+        try {
+            const userAddr = req.params.userAddr;
+            const nft = await this.nftModel.getNft(userAddr)
+
+            response = getResponse(JsonFormatStatus.SUCCESS, "", nft);
+
+            res.status(200).json(nft);
+        } catch (err: any) {
+            response = getResponse(JsonFormatStatus.ERROR, String(err.message), []);
+
+            res.status(500).json(response);
+        }
     }
 }
 
