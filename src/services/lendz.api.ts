@@ -44,6 +44,7 @@ class LendzApi implements ILendzApi {
     //--------------------------
     // Public Functions
     //--------------------------
+
 }
 
 
