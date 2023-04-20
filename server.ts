@@ -11,12 +11,15 @@ import * as dotenv from 'dotenv';
 import { MySqlApi } from "./src/services/mySql.api";
 import { AlchemyApi } from "./src/services/alchemy.api";
 
-import { NftRouter } from "./src/routes/nft.rou";
+import { LoanModel } from "./src/models/loan.mod";
+import { LoanController } from "./src/controllers/loan.con";
+import { LoanRouter } from "./src/routes/loan.rou";
 import { NftModel } from "./src/models/nft.mod";
 import { NftController } from "./src/controllers/nft.con";
-import { UserRouter } from "./src/routes/user.rou";
+import { NftRouter } from "./src/routes/nft.rou";
 import { UserModel } from "./src/models/user.mod";
 import { UserController } from "./src/controllers/user.con";
+import { UserRouter } from "./src/routes/user.rou";
 
 import { App } from "./src/app";
 
@@ -42,6 +45,9 @@ const mySql_Database: string            = process.env.MYSQL_DATABASE!;
 const alchemyApi: AlchemyApi            = new AlchemyApi(alchemy_ApiKey, alchemy_Network);
 const mySqlApi: MySqlApi                = new MySqlApi(mySql_Host, mySql_User, mySql_Password, mySql_Database);
 
+const loanModel: LoanModel              = new LoanModel(mySqlApi);
+const loanController: LoanController    = new LoanController(loanModel);
+const loanRouter: LoanRouter            = new LoanRouter(loanController);
 const nftModel: NftModel                = new NftModel(alchemyApi, mySqlApi);
 const nftController: NftController      = new NftController(nftModel);
 const nftRouter: NftRouter              = new NftRouter(nftController);
@@ -49,7 +55,7 @@ const userModel: UserModel              = new UserModel(alchemyApi, mySqlApi);
 const userController: UserController    = new UserController(userModel);
 const userRouter: UserRouter            = new UserRouter(userController);
 
-const app: App                          = new App(app_CorsOrigin, nftRouter, userRouter);
+const app: App                          = new App(app_CorsOrigin, loanRouter, nftRouter, userRouter);
 const server: http.Server               = http.createServer(app.getApp());
 
 // Server
