@@ -8,8 +8,9 @@ import http from "http";
 import * as dotenv from 'dotenv';
 
 // Application
-import { MySqlApi } from "./src/services/mySql.api";
 import { AlchemyApi } from "./src/services/alchemy.api";
+import { LendzApi } from "./src/services/lendz.api";
+import { MySqlApi } from "./src/services/mySql.api";
 
 import { LoanModel } from "./src/models/loan.mod";
 import { LoanController } from "./src/controllers/loan.con";
@@ -43,9 +44,10 @@ const mySql_Database: string            = process.env.MYSQL_DATABASE!;
 
 // Prepare Objects
 const alchemyApi: AlchemyApi            = new AlchemyApi(alchemy_ApiKey, alchemy_Network);
+const lendzApi : LendzApi               = new LendzApi();
 const mySqlApi: MySqlApi                = new MySqlApi(mySql_Host, mySql_User, mySql_Password, mySql_Database);
 
-const loanModel: LoanModel              = new LoanModel(mySqlApi);
+const loanModel: LoanModel              = new LoanModel(lendzApi, mySqlApi);
 const loanController: LoanController    = new LoanController(loanModel);
 const loanRouter: LoanRouter            = new LoanRouter(loanController);
 const nftModel: NftModel                = new NftModel(alchemyApi, mySqlApi);

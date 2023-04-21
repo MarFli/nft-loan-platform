@@ -45,7 +45,7 @@ class LoanRouter implements ILoanRouter {
     //--------------------------
     private _configRoutes(): void {
         this.loanRouter.get("/", async (req: Request, res: Response) => {
-
+            this.loanController.httpGetLoanAll(req, res);
         });
     }
 
