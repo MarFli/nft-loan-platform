@@ -6,17 +6,17 @@
 // Third Party
 
 // Application
+import { Loan_Functions, Loan_PostBody } from "../types/loan.types";
+
 import { LendzApi, LendzApi_Loan } from "../services/lendz.api";
 import { MySqlApi } from "../services/mySql.api";
-
-import { Loan_Functions } from "../types/loan.types";
 
 
 //==================================================================================================
 // Intrerface
 //==================================================================================================
 interface ILoanModel {
-    getLoanAll(): Promise<LendzApi_Loan[]>;
+    getLoan(body: Loan_PostBody): Promise<LendzApi_Loan[]>
 }
 
 
@@ -43,12 +43,13 @@ class LoanModel implements ILoanModel{
     //--------------------------
     // Private Functions
     //--------------------------
-    private async _requestHandler(func: Loan_Functions, userId: number = 0): Promise<LendzApi_Loan[]> {
+    // private async _requestHandler(func: Loan_Functions, body: Loan_PostBody = { currency: [], collection: [], amount: 0, duration: [], apr: [] }): Promise<LendzApi_Loan[]> {
+    private async _requestHandler(func: Loan_Functions, data: object = {}): Promise<LendzApi_Loan[]> {
         let funcResponse: LendzApi_Loan[] = [];
 
         try {
-            if (func === Loan_Functions.GetLoanAll){
-                funcResponse = await this.lendzApi.getLoan();
+            if (func === Loan_Functions.GetLoan){
+                funcResponse = await this.lendzApi.getLoan(data as Loan_PostBody);
             }
 
             return funcResponse;
@@ -60,8 +61,8 @@ class LoanModel implements ILoanModel{
     //--------------------------
     // Public Functions
     //--------------------------
-    public async getLoanAll(): Promise<LendzApi_Loan[]> {
-        return this._requestHandler(Loan_Functions.GetLoanAll);
+    public async getLoan(data: Loan_PostBody): Promise<LendzApi_Loan[]> {
+        return this._requestHandler(Loan_Functions.GetLoan, data);
     }
 }
 

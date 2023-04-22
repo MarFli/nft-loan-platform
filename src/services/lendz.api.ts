@@ -7,6 +7,7 @@
 import axios from "axios";
 
 // Application
+import { Loan_Collections, Loan_PostBody } from "../types/loan.types";
 
 
 //==================================================================================================
@@ -42,7 +43,7 @@ interface LendzApi_Loan {
 // Intrerface
 //==================================================================================================
 interface ILendzApi {
-    getLoan(): Promise<LendzApi_Loan[]>;
+    getLoan(data: Loan_PostBody): Promise<LendzApi_Loan[]>;
 }
 
 
@@ -60,21 +61,50 @@ class LendzApi implements ILendzApi {
     //--------------------------
     constructor() {}
 
+
     //--------------------------
     // Private Functions
     //--------------------------
+    private _getLoanFiltered(loan: LendzApi_Loan[]): LendzApi[] {
+        return []
+    }
 
+    private _getRequestUrl(data: Loan_PostBody): string {
+        let collection: string[] = [];
+
+        // Replace collection name with collection address in case name is used
+        for (let i = 0; i < data.collection.length; i++) {
+            const dummy: string = data.collection[i].replaceAll(" ", "").toLowerCase();
+
+            if (dummy in Loan_Collections) {
+                collection.push(Loan_Collections[dummy as keyof typeof Loan_Collections]);
+            }
+        }
+
+        const url: string = `https://lendz.loan/api/borrower/v2/offers/list?options={
+            "currency":${JSON.stringify(data.currency)},
+            "collection":${JSON.stringify(collection)},
+            "amount":${JSON.stringify(data.amount)},
+            "duration":${JSON.stringify(data.duration)},
+            "apr":${JSON.stringify(data.apr)}
+        }`;
+
+        return url;
+    }
 
     //--------------------------
     // Public Functions
     //--------------------------
-    public async getLoan(): Promise<LendzApi_Loan[]> {
+    public async getLoan(data: Loan_PostBody): Promise<LendzApi_Loan[]> {
+        const url: string = this._getRequestUrl(data);
+
+        console.log(url);
+
         try {
-            const response = await axios.get<LendzApi_Loan[]>(`https://lendz.loan/api/borrower/v2/offers/list?options={
-                "collection":["0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"],
-                "duration":[1,90],
-                "apr":[0,500]
-            }`);
+            const response = await axios.get<LendzApi_Loan[]>(url.toLowerCase());
+
+            // TODO Filter za platformo
+            this._getLoanFiltered(response.data);
 
             return response.data;
         } catch (err: any) {

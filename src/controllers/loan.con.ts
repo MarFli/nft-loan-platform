@@ -7,17 +7,17 @@
 import { Request, Response } from "express";
 
 // Application
-import { JsonFormatStatus, type JsonFormat, getResponse } from "../../lib/libRoot";
-
 import { LoanModel } from "../models/loan.mod";
 import { Loan_Functions } from "../types/loan.types";
+
+import { JsonFormatStatus, type JsonFormat, getResponse } from "../../lib/libRoot";
 
 
 //==================================================================================================
 // Intrerface
 //==================================================================================================
 interface ILoanController {
-    httpGetLoanAll(req: Request, res: Response): Promise<void>;
+    httpGetLoan(req: Request, res: Response): Promise<void>;
 }
 
 
@@ -46,8 +46,8 @@ class LoanController implements ILoanController {
         let response: JsonFormat = getResponse(JsonFormatStatus.ERROR, "", []);
 
         try {
-            if (func === Loan_Functions.GetLoanAll){
-                const loans = await this.loanModel.getLoanAll();
+            if (func === Loan_Functions.GetLoan){
+                const loans = await this.loanModel.getLoan(req.body);
 
                 response = getResponse(JsonFormatStatus.SUCCESS, "", loans);
             }
@@ -63,8 +63,8 @@ class LoanController implements ILoanController {
     //--------------------------
     // Public Functions
     //--------------------------
-    public async httpGetLoanAll(req: Request, res: Response): Promise<void> {
-        this._requestHandler(req, res, Loan_Functions.GetLoanAll);
+    public async httpGetLoan(req: Request, res: Response): Promise<void> {
+        this._requestHandler(req, res, Loan_Functions.GetLoan);
     }
 }
 
