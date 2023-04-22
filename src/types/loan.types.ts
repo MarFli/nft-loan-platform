@@ -25,6 +25,10 @@ interface Loan_PostBody {
     platform: Loan_Platform[];
 }
 
+
+//==================================================================================================
+// Objects
+//==================================================================================================
 const Loan_Collections = {
     boredapeyachtclub: "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
     mutantapeyachtclub: "0x60E4d786628Fea6478F785A6d7e704777c86a7c6",
@@ -35,4 +39,4 @@ const Loan_Collections = {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { Loan_Functions, Loan_Collections, Loan_PostBody };
+export { Loan_Functions, Loan_Platform, Loan_PostBody, Loan_Collections };

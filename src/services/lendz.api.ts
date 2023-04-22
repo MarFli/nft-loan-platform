@@ -7,7 +7,7 @@
 import axios from "axios";
 
 // Application
-import { Loan_Collections, Loan_PostBody } from "../types/loan.types";
+import { Loan_Platform, Loan_Collections, Loan_PostBody } from "../types/loan.types";
 
 
 //==================================================================================================
@@ -65,8 +65,24 @@ class LendzApi implements ILendzApi {
     //--------------------------
     // Private Functions
     //--------------------------
-    private _getLoanFiltered(loan: LendzApi_Loan[]): LendzApi[] {
-        return []
+    private _getLoanFiltered(loans: LendzApi_Loan[], platform: Loan_Platform[]): LendzApi_Loan[] {
+        let filteredLoans: LendzApi_Loan[] = []
+
+        for (const pf of platform) {
+            // Return if all loans
+            if (pf === Loan_Platform.ALL) {
+                return loans;
+            }
+
+            // Filter
+            for (let i = 0; i < loans.length; i++) {
+                if (loans[i].platform.name.toLowerCase() === pf) {
+                    filteredLoans.push(loans[i]);
+                }
+            }
+        }
+
+        return filteredLoans;
     }
 
     private _getRequestUrl(data: Loan_PostBody): string {
@@ -98,15 +114,12 @@ class LendzApi implements ILendzApi {
     public async getLoan(data: Loan_PostBody): Promise<LendzApi_Loan[]> {
         const url: string = this._getRequestUrl(data);
 
-        console.log(url);
-
         try {
             const response = await axios.get<LendzApi_Loan[]>(url.toLowerCase());
 
-            // TODO Filter za platformo
-            this._getLoanFiltered(response.data);
+            const loans: LendzApi_Loan[] = this._getLoanFiltered(response.data, data.platform);
 
-            return response.data;
+            return loans;
         } catch (err: any) {
             throw err;
         }
