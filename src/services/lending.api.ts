@@ -13,7 +13,7 @@ import { Loan_Platform, Loan_Collections, Loan_PostBody } from "../types/loan.ty
 //==================================================================================================
 // Types
 //==================================================================================================
-interface LendzApi_Loan {
+interface LendingApi_Loan {
     id: string;
     nft: {
         id: string;
@@ -42,31 +42,34 @@ interface LendzApi_Loan {
 //==================================================================================================
 // Intrerface
 //==================================================================================================
-interface ILendzApi {
-    getLoan(data: Loan_PostBody): Promise<LendzApi_Loan[]>;
+interface ILendingApi {
+    getLoan(data: Loan_PostBody): Promise<LendingApi_Loan[]>;
 }
 
 
 //==================================================================================================
 // Class
 //==================================================================================================
-class LendzApi implements ILendzApi {
+class LendingApi implements ILendingApi {
     //--------------------------
     // Propeties
     //--------------------------
+    protected apiUrl: string;
 
 
     //--------------------------
     // Ctor
     //--------------------------
-    constructor() {}
+    constructor(apiUrl: string) {
+        this.apiUrl = apiUrl;
+    }
 
 
     //--------------------------
     // Private Functions
     //--------------------------
-    private _getLoanFiltered(loans: LendzApi_Loan[], platform: Loan_Platform[]): LendzApi_Loan[] {
-        let filteredLoans: LendzApi_Loan[] = []
+    private _getLoanFiltered(loans: LendingApi_Loan[], platform: Loan_Platform[]): LendingApi_Loan[] {
+        let filteredLoans: LendingApi_Loan[] = []
 
         for (const pf of platform) {
             // Return if all loans
@@ -97,7 +100,7 @@ class LendzApi implements ILendzApi {
             }
         }
 
-        const url: string = `https://lendz.loan/api/borrower/v2/offers/list?options={
+        const url: string = `${this.apiUrl}/offers/list?options={
             "currency":${JSON.stringify(data.currency)},
             "collection":${JSON.stringify(collection)},
             "amount":${JSON.stringify(data.amount)},
@@ -111,13 +114,13 @@ class LendzApi implements ILendzApi {
     //--------------------------
     // Public Functions
     //--------------------------
-    public async getLoan(data: Loan_PostBody): Promise<LendzApi_Loan[]> {
+    public async getLoan(data: Loan_PostBody): Promise<LendingApi_Loan[]> {
         const url: string = this._getRequestUrl(data);
 
         try {
-            const response = await axios.get<LendzApi_Loan[]>(url.toLowerCase());
+            const response = await axios.get<LendingApi_Loan[]>(url.toLowerCase());
 
-            const loans: LendzApi_Loan[] = this._getLoanFiltered(response.data, data.platform);
+            const loans: LendingApi_Loan[] = this._getLoanFiltered(response.data, data.platform);
 
             return loans;
         } catch (err: any) {
@@ -130,4 +133,4 @@ class LendzApi implements ILendzApi {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { LendzApi, LendzApi_Loan };
+export { LendingApi, LendingApi_Loan };
