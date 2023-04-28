@@ -45,10 +45,10 @@ class UserRouter implements IUserRouter {
     //--------------------------
     private _configRoutes(): void {
         this.usersRouter.get("/", async (req: Request, res: Response) => {
-            this.userController.httpGetUserAll(req, res)
+            this.userController.httpGetUserAll(req, res);
         });
         this.usersRouter.get("/:userId", async (req: Request, res: Response) => {
-            this.userController.httpGetUser(req, res)
+            this.userController.httpGetUser(req, res);
         });
     }
 

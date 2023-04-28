@@ -8,8 +8,9 @@ import http from "http";
 import * as dotenv from 'dotenv';
 
 // Application
-import { MySqlApi } from "./src/services/mySql.api";
 import { AlchemyApi } from "./src/services/alchemy.api";
+import { LendingApi } from "./src/services/lending.api";
+import { MySqlApi } from "./src/services/mySql.api";
 
 import { LoanModel } from "./src/models/loan.mod";
 import { LoanController } from "./src/controllers/loan.con";
@@ -36,6 +37,8 @@ const app_CorsOrigin: string            = process.env.APP_CORS_ORIGIN!;
 const alchemy_ApiKey: string            = process.env.ALCHEMY_API_KEY!;
 const alchemy_Network: string           = process.env.ALCHEMY_NETWORK!;
 
+const lending_apiUrl: string            = process.env.LENDING_API_URL!;
+
 const mySql_Host: string                = process.env.MYSQL_HOST!;
 const mySql_User: string                = process.env.MYSQL_USER!;
 const mySql_Password: string            = process.env.MYSQL_PASSWORD!;
@@ -43,9 +46,10 @@ const mySql_Database: string            = process.env.MYSQL_DATABASE!;
 
 // Prepare Objects
 const alchemyApi: AlchemyApi            = new AlchemyApi(alchemy_ApiKey, alchemy_Network);
+const lendingApi : LendingApi           = new LendingApi(lending_apiUrl);
 const mySqlApi: MySqlApi                = new MySqlApi(mySql_Host, mySql_User, mySql_Password, mySql_Database);
 
-const loanModel: LoanModel              = new LoanModel(mySqlApi);
+const loanModel: LoanModel              = new LoanModel(lendingApi, mySqlApi);
 const loanController: LoanController    = new LoanController(loanModel);
 const loanRouter: LoanRouter            = new LoanRouter(loanController);
 const nftModel: NftModel                = new NftModel(alchemyApi, mySqlApi);

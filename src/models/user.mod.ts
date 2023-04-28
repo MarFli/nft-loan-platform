@@ -6,8 +6,8 @@
 // Third Party
 
 // Application
-import { MySqlApi, MySqlApi_User } from "../services/mySql.api";
 import { AlchemyApi } from "../services/alchemy.api";
+import { MySqlApi, MySqlApi_User } from "../services/mySql.api";
 
 import { User_Functions } from "../types/user.types";
 
