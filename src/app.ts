@@ -63,7 +63,7 @@ class App implements IApp {
         this.app.use("/user", this.userRouter.getRouter());
         // TODO Here comes other routes
         this.app.get("/*", (req: Request, res: Response) => {
-            res.status(200).send("Hello CircleCI");
+            res.status(200).send("Hello");
         });
     }
 
