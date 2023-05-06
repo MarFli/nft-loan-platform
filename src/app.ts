@@ -54,7 +54,7 @@ class App implements IApp {
     //--------------------------
     private _configApp(): void {
         // Middleware
-        this.app.use(cors({ origin: this.corsOrigin }));     // MF: https://www.npmjs.com/package/cors
+        this.app.use(cors());     // MF: https://www.npmjs.com/package/cors
         this.app.use(express.json());
 
         // Endpoints
