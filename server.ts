@@ -5,6 +5,7 @@
 import http from "http";
 
 // Third Party
+import { Express } from "express";
 import * as dotenv from 'dotenv';
 
 // Application
@@ -26,53 +27,93 @@ import { App } from "./src/app";
 
 
 //==================================================================================================
-// Server
+// Intrerface
 //==================================================================================================
-dotenv.config()
+interface IServer {
+    startServer(): void;
+    stopServer(): void;
+    getApp(): Express;
+}
 
-// Prepare Variables
-const port: number                      = parseInt(process.env.PORT!);
-const app_CorsOrigin: string            = process.env.APP_CORS_ORIGIN!;
 
-const alchemy_ApiKey: string            = process.env.ALCHEMY_API_KEY!;
-const alchemy_Network: string           = process.env.ALCHEMY_NETWORK!;
+//==================================================================================================
+// Class
+//==================================================================================================
+class Server implements IServer {
+    //--------------------------
+    // Propeties
+    //--------------------------
+    protected dotEnv: dotenv.DotenvConfigOutput     = dotenv.config();
 
-const lending_apiUrl: string            = process.env.LENDING_API_URL!;
+    protected port: number                          = parseInt(process.env.PORT!);
+    protected app_CorsOrigin: string                = process.env.APP_CORS_ORIGIN!;
 
-const mySql_Host: string                = process.env.MYSQL_HOST!;
-const mySql_User: string                = process.env.MYSQL_USER!;
-const mySql_Password: string            = process.env.MYSQL_PASSWORD!;
-const mySql_Database: string            = process.env.MYSQL_DATABASE!;
+    protected alchemy_ApiKey: string                = process.env.ALCHEMY_API_KEY!;
+    protected alchemy_Network: string               = process.env.ALCHEMY_NETWORK!;
 
-// Prepare Objects
-const alchemyApi: AlchemyApi            = new AlchemyApi(alchemy_ApiKey, alchemy_Network);
-const lendingApi : LendingApi           = new LendingApi(lending_apiUrl);
-const mySqlApi: MySqlApi                = new MySqlApi(mySql_Host, mySql_User, mySql_Password, mySql_Database);
+    protected lending_apiUrl: string                = process.env.LENDING_API_URL!;
 
-const loanModel: LoanModel              = new LoanModel(lendingApi, mySqlApi);
-const loanController: LoanController    = new LoanController(loanModel);
-const loanRouter: LoanRouter            = new LoanRouter(loanController);
-const nftModel: NftModel                = new NftModel(alchemyApi, mySqlApi);
-const nftController: NftController      = new NftController(nftModel);
-const nftRouter: NftRouter              = new NftRouter(nftController);
-const userModel: UserModel              = new UserModel(alchemyApi, mySqlApi);
-const userController: UserController    = new UserController(userModel);
-const userRouter: UserRouter            = new UserRouter(userController);
+    protected mySql_Host: string                    = process.env.MYSQL_HOST!;
+    protected mySql_User: string                    = process.env.MYSQL_USER!;
+    protected mySql_Password: string                = process.env.MYSQL_PASSWORD!;
+    protected mySql_Database: string                = process.env.MYSQL_DATABASE!;
 
-const app: App                          = new App(app_CorsOrigin, loanRouter, nftRouter, userRouter);
-const server: http.Server               = http.createServer(app.getApp());
+    protected alchemyApi: AlchemyApi                = new AlchemyApi(this.alchemy_ApiKey, this.alchemy_Network);
+    protected lendingApi : LendingApi               = new LendingApi(this.lending_apiUrl);
+    protected mySqlApi: MySqlApi                    = new MySqlApi(this.mySql_Host, this.mySql_User, this.mySql_Password, this.mySql_Database);
 
-// Server
-function startServer(): void {
-    // TODO Initializations
+    protected loanModel: LoanModel                  = new LoanModel(this.lendingApi, this.mySqlApi);
+    protected loanController: LoanController        = new LoanController(this.loanModel);
+    protected loanRouter: LoanRouter                = new LoanRouter(this.loanController);
+    protected nftModel: NftModel                    = new NftModel(this.alchemyApi, this.mySqlApi);
+    protected nftController: NftController          = new NftController(this.nftModel);
+    protected nftRouter: NftRouter                  = new NftRouter(this.nftController);
+    protected userModel: UserModel                  = new UserModel(this.alchemyApi, this.mySqlApi);
+    protected userController: UserController        = new UserController(this.userModel);
+    protected userRouter: UserRouter                = new UserRouter(this.userController);
 
-    server.listen(port, () => {
-        console.log(`Listening on port ${port}...`);
-    });
+    protected app: App                              = new App(this.app_CorsOrigin, this.loanRouter, this.nftRouter, this.userRouter);
+    protected server: http.Server                   = http.createServer(this.app.getApp());
+
+
+    //--------------------------
+    // Ctor
+    //--------------------------
+    constructor() {}
+
+
+    //--------------------------
+    // Private Functions
+    //--------------------------
+
+    //--------------------------
+    // Public Functions
+    //--------------------------
+    public startServer(): void {
+        this.server.listen(this.port, () => {
+            console.log(`Listening on port ${this.port}...`);
+        });
+    }
+
+    public stopServer(): void {
+        this.server.close();
+    }
+
+    public getApp(): Express {
+        return this.app.getApp();
+    }
 }
 
 
 //==================================================================================================
 // Init
 //==================================================================================================
-startServer();
+const server: Server = new Server();
+
+server.startServer();
+
+
+//==================================================================================================
+// Exports
+//==================================================================================================
+export default server;
