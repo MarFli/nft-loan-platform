@@ -95,6 +95,12 @@ class LendingApi implements ILendingApi {
         for (let i = 0; i < data.collection.length; i++) {
             const dummy: string = data.collection[i].replaceAll(" ", "").toLowerCase();
 
+            if (dummy === "all") {
+                collection = Object.values(Loan_Collections);
+
+                break;
+            }
+
             if (dummy in Loan_Collections) {
                 collection.push(Loan_Collections[dummy as keyof typeof Loan_Collections]);
             }
@@ -121,6 +127,12 @@ class LendingApi implements ILendingApi {
             const response = await axios.get<LendingApi_Loan[]>(url.toLowerCase());
 
             const loans: LendingApi_Loan[] = this._getLoanFiltered(response.data, data.platform);
+
+            if (data.sortedByOffer === true) {
+                loans.sort((a: LendingApi_Loan, b: LendingApi_Loan) => {
+                    return a.loanTerms.interestRate - b.loanTerms.interestRate
+                });
+            }
 
             return loans;
         } catch (err: any) {

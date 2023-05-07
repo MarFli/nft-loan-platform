@@ -17,6 +17,7 @@ const enum Loan_Platform {
 }
 
 interface Loan_PostBody {
+    sortedByOffer: boolean;
     currency: string[];
     collection: string[];
     amount: number;
