@@ -134,7 +134,7 @@ class LendingApi implements ILendingApi {
                 });
             }
 
-            return loans;
+            return loans.slice(0, 50);      // MF: To return mas 50 loans
         } catch (err: any) {
             throw err;
         }

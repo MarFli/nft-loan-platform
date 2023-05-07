@@ -31,7 +31,7 @@ import { App } from "./src/app";
 dotenv.config()
 
 // Prepare Variables
-const port: number                      = Number(process.env.PORT!);
+const port: number                      = parseInt(process.env.PORT!);
 const app_CorsOrigin: string            = process.env.APP_CORS_ORIGIN!;
 
 const alchemy_ApiKey: string            = process.env.ALCHEMY_API_KEY!;
