@@ -43,4 +43,9 @@ const Loan_Collections = {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { Loan_Functions, Loan_Platform, Loan_PostBody, Loan_Collections };
+export {
+    Loan_Functions,
+    Loan_Platform,
+    Loan_PostBody,
+    Loan_Collections
+};

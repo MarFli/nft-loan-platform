@@ -94,4 +94,7 @@ class AlchemyApi implements IAlchemyApi {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { AlchemyApi, AlchemyApi_OwnerNfts };
+export {
+    AlchemyApi,
+    AlchemyApi_OwnerNfts
+};

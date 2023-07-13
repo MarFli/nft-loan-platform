@@ -145,4 +145,7 @@ class LendingApi implements ILendingApi {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { LendingApi, LendingApi_Loan };
+export {
+    LendingApi,
+    LendingApi_Loan
+};

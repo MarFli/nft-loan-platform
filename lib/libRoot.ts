@@ -24,4 +24,8 @@ function getResponse(status: JsonFormatStatus, message: string, data: object): J
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { JsonFormatStatus, JsonFormat, getResponse };
+export {
+    JsonFormatStatus,
+    JsonFormat,
+    getResponse
+};
