@@ -59,16 +59,29 @@ describe("Test - Unit - 'MySql Database'", () => {
         expect(nft[0].owner_user_id).toBe(ownerId);
     });
 
-    test("Insert wrong data and handle err", async () => {
-        const wrongId: number = -4;
+    test("Insert wrong 'User' data and handle err", async () => {
+        const wrongUserId: number = -4;
         let msg: string = "";
 
         try {
-            const result: MySqlApi_User[] = await mySqlApi.mySqlApi_readUser(wrongId);
+            const result: MySqlApi_User[] = await mySqlApi.mySqlApi_readUser(wrongUserId);
         } catch (err: any) {
             msg = err.message;
         }
 
-        expect(msg).toBe(`User with an id '${wrongId}' doesn't exist`);
+        expect(msg).toBe(`User with an id '${wrongUserId}' doesn't exist`);
+    });
+
+    test("Insert wrong 'Nft' data and handle err", async () => {
+        const wrongNftId: number = 3.4;
+        let msg: string = "";
+
+        try {
+            const result: MySqlApi_User[] = await mySqlApi.mySqlApi_readUser(wrongNftId);
+        } catch (err: any) {
+            msg = err.message;
+        }
+
+        expect(msg).toBe(`User with an id '${wrongNftId}' doesn't exist`);
     });
 });
