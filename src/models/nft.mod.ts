@@ -6,8 +6,8 @@
 // Third Party
 
 // Application
-import { MySqlApi, MySqlApi_UserCheck, MySqlApi_Nft } from "../services/mySql.api";
 import { AlchemyApi, AlchemyApi_OwnerNfts } from "../services/alchemy.api";
+import { MySqlApi, MySqlApi_UserCheck, MySqlApi_Nft, MySqlApi_NftCheck } from "../services/mySql.api";
 
 import { Nft_Functions } from "../types/nft.types";
 
@@ -89,13 +89,10 @@ class NftModel implements INftModel {
 
             for (let i = 0; i < nftData.numOfNfts; i++) {
                 // Check if NFT is in data base
-                const isNftInDatabase: boolean = await this.mySqlApi.mySqlApi_isNftInDatabase(
-                    nftData.nftAddrArr[i].nftAddr,
-                    nftData.nftAddrArr[i].tokenId
-                );
+                const nftCheck: MySqlApi_NftCheck = await this.mySqlApi.mySqlApi_isNftInDatabase(nftData.nftAddrArr[i].nftAddr);
 
                 // Add NFT to DB if it doesn't exist
-                if (!isNftInDatabase) {
+                if (nftCheck.isNftInDatabase === false) {
                     this.mySqlApi.mySqlApi_createNft(
                         nftData.nftAddrArr[i].nftAddr,
                         nftData.nftAddrArr[i].tokenId,

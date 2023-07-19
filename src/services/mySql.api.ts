@@ -36,6 +36,7 @@ interface MySqlApi_Nft extends RowDataPacket {
 interface MySqlApi_NftCheck extends RowDataPacket {
     address: string;
     token_id: string;
+    isNftInDatabase: boolean;
 }
 
 
@@ -55,7 +56,7 @@ interface IMySqlApi {
     mySqlApi_createNft(nftAddr: string, tokenId: string, userId: number): Promise<number>;
     mySqlApi_readNftAll(): Promise<MySqlApi_Nft[]>;
     mySqlApi_readNft(nftId: number): Promise<MySqlApi_Nft[]>;
-    mySqlApi_isNftInDatabase(nftAddr: string, tokenId: string): Promise<boolean>;
+    mySqlApi_isNftInDatabase(nftAddr: string, tokenId: string): Promise<MySqlApi_NftCheck>;
 }
 
 
@@ -225,7 +226,7 @@ class MySqlApi implements IMySqlApi {
         });
     }
 
-    mySqlApi_readNft(nftId: number): Promise<MySqlApi_Nft[]> {
+    public mySqlApi_readNft(nftId: number): Promise<MySqlApi_Nft[]> {
         return new Promise((resolve, reject) => {
             this.pool.query<MySqlApi_Nft[]>(
                 `SELECT * FROM erc721_tokens WHERE id = ?;`,
@@ -245,23 +246,28 @@ class MySqlApi implements IMySqlApi {
         });
     }
 
-    public mySqlApi_isNftInDatabase(nftAddr: string, tokenId: string): Promise<boolean> {
-        let isNftInDatabase: boolean = false
-
+    public mySqlApi_isNftInDatabase(nftAddr: string): Promise<MySqlApi_NftCheck> {
         return new Promise((resolve, reject) => {
             this.pool.query<MySqlApi_NftCheck[]>(
                 `SELECT address, token_id FROM erc721_tokens WHERE address = ?;`,
-                [nftAddr, tokenId],
+                [nftAddr],
                 (error, results) => {
                     if (error) {
                         reject(error);
                     } else {
                         if (results.length !== 0) {
-                            if ((results[0]["address"] === nftAddr) && (results[0]["token_id"] === tokenId)) {
-                                isNftInDatabase = true;
+                            if (results[0]["token_id"] === nftAddr) {
+                                results[0]["isNftInDatabase"] = true;
                             }
+                        } else {
+                            results.push({
+                                constructor: { name: "RowDataPacket"},
+                                address: "",
+                                token_id: "",
+                                isNftInDatabase: false
+                            });
                         }
-                        resolve(isNftInDatabase);
+                        resolve(results[0]);
                     }
                 }
             );
@@ -277,5 +283,6 @@ export {
     MySqlApi,
     MySqlApi_User,
     MySqlApi_UserCheck,
-    MySqlApi_Nft
+    MySqlApi_Nft,
+    MySqlApi_NftCheck
 };
