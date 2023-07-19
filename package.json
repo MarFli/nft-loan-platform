@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand --forceExit",
     "dev": "concurrently \"tsc -w\" \"nodemon dist/server.js\""
   },
   "keywords": [],

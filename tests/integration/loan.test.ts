@@ -4,24 +4,37 @@
 // Standard Library
 
 // Third Party
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from "@jest/globals";
 import request from "supertest";
 
 // Application
-import server from '../../server';
+import server from "../../server";
 
 
 //==================================================================================================
 // Tests
 //==================================================================================================
-describe("Test GET /users", () => {
+describe("Test POST /loan", () => {
+    afterEach(() => {
+        server.stopServer();
+    });
+
     test("Respond with 200", async () => {
         const response = await request(server.getApp())
-            .get("/user")
-            .expect('Content-Type', /json/)
+            .post("/loan")
+            .send({
+                sortedByOffer:true,
+                currency:[],
+                collection:["boredapeyachtclub"],
+                amount:0,
+                duration:[1,120],
+                apr:[0,500],
+                platform:["all"]
+            })
+            .expect("Content-Type", /json/)
             .expect(200);
 
-        //expect(response.statusCode).toBe(200);
-        server.stopServer();
+        expect(response.body.status).toBe(1);
+        expect(response.body.data.length).toBeLessThanOrEqual(50);
     });
 });

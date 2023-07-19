@@ -19,6 +19,9 @@ const config: Config = {
     transform: {
         "^.+\\.(ts|tsx)$": "ts-jest",
     },
+    testMatch: [
+        "**/?(*.)+(test).js"
+    ],
     coverageThreshold: {
         global: {
             branches: 80,

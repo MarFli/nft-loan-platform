@@ -6,7 +6,7 @@ import http from "http";
 
 // Third Party
 import { Express } from "express";
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 
 // Application
 import { AlchemyApi } from "./src/services/alchemy.api";
@@ -85,6 +85,7 @@ class Server implements IServer {
     //--------------------------
     // Private Functions
     //--------------------------
+
 
     //--------------------------
     // Public Functions

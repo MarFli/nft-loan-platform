@@ -62,7 +62,7 @@ class UserController implements IUserController {
         } catch (err: any) {
             response = getResponse(JsonFormatStatus.ERROR, String(err.message), []);
 
-            res.status(500).json(response);
+            res.status(400).json(response);
         }
     }
 
