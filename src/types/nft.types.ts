@@ -3,7 +3,8 @@
 //==================================================================================================
 const enum Nft_Functions {
     GetNftAll = 1,
-    GetNft = 2
+    GetNft = 2,
+    GetNftForAddrAll = 3
 }
 
 

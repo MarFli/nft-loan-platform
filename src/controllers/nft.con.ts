@@ -19,6 +19,7 @@ import { Nft_Functions } from "../types/nft.types";
 interface INftController {
     httpGetNftAll(req: Request, res: Response): Promise<void>;
     httpGetNft(req: Request, res: Response): Promise<void>;
+    httpgetNftForAddrAll(req: Request, res: Response): Promise<void>;
 }
 
 
@@ -52,8 +53,13 @@ class NftController implements INftController {
 
                 response = getResponse(JsonFormatStatus.SUCCESS, "", nfts);
             } else if (func === Nft_Functions.GetNft) {
+                const nftId = Number(req.params.nftId);
+                const nft = await this.nftModel.getNft(nftId)
+    
+                response = getResponse(JsonFormatStatus.SUCCESS, "", nft);
+            } else if (func === Nft_Functions.GetNftForAddrAll) {
                 const userAddr = req.params.userAddr;
-                const nft = await this.nftModel.getNft(userAddr)
+                const nft = await this.nftModel.getNftForAddrAll(userAddr)
     
                 response = getResponse(JsonFormatStatus.SUCCESS, "", nft);
             }
@@ -62,7 +68,7 @@ class NftController implements INftController {
         } catch (err: any) {
             response = getResponse(JsonFormatStatus.ERROR, String(err.message), []);
 
-            res.status(500).json(response);
+            res.status(400).json(response);
         }
     }
 
@@ -77,6 +83,9 @@ class NftController implements INftController {
         this._requestHandler(req, res, Nft_Functions.GetNft);
     }
 
+    public async httpgetNftForAddrAll(req: Request, res: Response): Promise<void> {
+        this._requestHandler(req, res, Nft_Functions.GetNftForAddrAll);
+    }
 }
 
 

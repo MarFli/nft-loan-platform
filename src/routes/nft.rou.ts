@@ -47,8 +47,11 @@ class NftRouter implements INftRouter {
         this.usersRouter.get("/", (req: Request, res: Response) => {
             this.nftController.httpGetNftAll(req, res);
         });
-        this.usersRouter.get("/:userAddr", (req: Request, res: Response) => {
+        this.usersRouter.get("/:nftId", (req: Request, res: Response) => {
             this.nftController.httpGetNft(req, res);
+        });
+        this.usersRouter.get("/userAddr/:userAddr", (req: Request, res: Response) => {
+            this.nftController.httpgetNftForAddrAll(req, res);
         });
     }
 

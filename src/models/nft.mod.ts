@@ -9,13 +9,17 @@
 import { MySqlApi, MySqlApi_UserCheck, MySqlApi_Nft } from "../services/mySql.api";
 import { AlchemyApi, AlchemyApi_OwnerNfts } from "../services/alchemy.api";
 
+import { Nft_Functions } from "../types/nft.types";
+
 
 //==================================================================================================
 // Intrerface
 //==================================================================================================
 interface INftModel {
     getNftAll(): Promise<MySqlApi_Nft[]>;
-    getNft(userAddr: string): Promise<AlchemyApi_OwnerNfts>;
+    getNft(nftId: number): Promise<MySqlApi_Nft[]>;
+
+    getNftForAddrAll(userAddr: string): Promise<AlchemyApi_OwnerNfts>;
 }
 
 
@@ -43,13 +47,17 @@ class NftModel implements INftModel {
 
 
     //--------------------------
-    // Public Functions
+    // Private Functions
     //--------------------------
-    public async getNftAll(): Promise<MySqlApi_Nft[]> {
+    private async _requestHandler(func: Nft_Functions, nftId: number = 0): Promise<MySqlApi_Nft[]> {
         let funcResponse: MySqlApi_Nft[] = [];
 
         try {
-            funcResponse = await this.mySqlApi.mySqlApi_readNftAll()
+            if (func === Nft_Functions.GetNftAll){
+                funcResponse = await this.mySqlApi.mySqlApi_readNftAll();
+            } else if (func === Nft_Functions.GetNft) {
+                funcResponse = await this.mySqlApi.mySqlApi_readNft(nftId);
+            }
 
             return funcResponse;
         } catch (err: any) {
@@ -57,7 +65,18 @@ class NftModel implements INftModel {
         }
     }
 
-    public async getNft(userAddr: string): Promise<AlchemyApi_OwnerNfts> {  // MF: TODO Algorithm doesn't work well (no updates of NFTs, users,...)
+    //--------------------------
+    // Public Functions
+    //--------------------------
+    public async getNftAll(): Promise<MySqlApi_Nft[]> {
+        return this._requestHandler(Nft_Functions.GetNftAll);
+    }
+
+    public async getNft(nftId: number): Promise<MySqlApi_Nft[]> {
+        return this._requestHandler(Nft_Functions.GetNft, nftId)
+    }
+
+    public async getNftForAddrAll(userAddr: string): Promise<AlchemyApi_OwnerNfts> {  // MF: TODO Algorithm doesn't work well (no updates of NFTs, users,...)
         // Predpostavljamo da je user valid, kr se ne more majster vpisat na platformo z nevalid addresso
         const nftData: AlchemyApi_OwnerNfts = await this.alchemyApi.alchemyApi_getNftsForOwner(userAddr);
         const userData: MySqlApi_UserCheck = await this.mySqlApi.mySqlApi_isUserInDatabase(userAddr);
