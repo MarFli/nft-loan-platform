@@ -40,9 +40,7 @@ describe("Test - Integration - 'user' - GET", () => {
         expect(response.body.data[0].id).toBe(id);
     });
 
-    test("Catch err while requesting data using nonexisting id", async () => {
-        const id: number = 2;
-
+    test("Catch err while requesting single user using nonexisting id", async () => {
         const response = await request(server.getApp())
             .get(`/user/`)
             .expect("Content-Type", /json/)
@@ -56,5 +54,6 @@ describe("Test - Integration - 'user' - GET", () => {
             .expect(400);
 
         expect(responseErr.body.status).toBe(2);
+        expect(responseErr.body.message).toBe(`User with an id '${numOfUsers + 1}' doesn't exist`);
     });
 });

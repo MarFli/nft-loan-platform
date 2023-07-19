@@ -35,6 +35,24 @@ describe("Test - Integration - 'loan' - POST", () => {
             .expect(200);
 
         expect(response.body.status).toBe(1);
+    });
+
+    test("Receive less or equal to 50 loans", async () => {
+        const response = await request(server.getApp())
+            .post("/loan")
+            .send({
+                sortedByOffer:true,
+                currency:[],
+                collection:["all"],
+                amount:0,
+                duration:[1,120],
+                apr:[0,500],
+                platform:["all"]
+            })
+            .expect("Content-Type", /json/)
+            .expect(200);
+
+        expect(response.body.status).toBe(1);
         expect(response.body.data.length).toBeLessThanOrEqual(50);
     });
 });
