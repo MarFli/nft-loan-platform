@@ -54,7 +54,7 @@ class App implements IApp {
     //--------------------------
     private _configApp(): void {
         // Middleware
-        this.app.use(cors({ origin: this.corsOrigin }));     // MF: https://www.npmjs.com/package/cors
+        this.app.use(cors());     // MF: https://www.npmjs.com/package/cors
         this.app.use(express.json());
 
         // Endpoints
@@ -63,7 +63,7 @@ class App implements IApp {
         this.app.use("/user", this.userRouter.getRouter());
         // TODO Here comes other routes
         this.app.get("/*", (req: Request, res: Response) => {
-            res.status(200).send("Home")
+            res.status(200).send("Home");
         });
     }
 
@@ -79,4 +79,6 @@ class App implements IApp {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { App };
+export {
+    App
+};

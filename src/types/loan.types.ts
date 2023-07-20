@@ -17,6 +17,7 @@ const enum Loan_Platform {
 }
 
 interface Loan_PostBody {
+    sortedByOffer: boolean;
     currency: string[];
     collection: string[];
     amount: number;
@@ -42,4 +43,9 @@ const Loan_Collections = {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { Loan_Functions, Loan_Platform, Loan_PostBody, Loan_Collections };
+export {
+    Loan_Functions,
+    Loan_Platform,
+    Loan_PostBody,
+    Loan_Collections
+};

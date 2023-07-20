@@ -95,6 +95,12 @@ class LendingApi implements ILendingApi {
         for (let i = 0; i < data.collection.length; i++) {
             const dummy: string = data.collection[i].replaceAll(" ", "").toLowerCase();
 
+            if (dummy === "all") {
+                collection = Object.values(Loan_Collections);
+
+                break;
+            }
+
             if (dummy in Loan_Collections) {
                 collection.push(Loan_Collections[dummy as keyof typeof Loan_Collections]);
             }
@@ -122,7 +128,13 @@ class LendingApi implements ILendingApi {
 
             const loans: LendingApi_Loan[] = this._getLoanFiltered(response.data, data.platform);
 
-            return loans;
+            if (data.sortedByOffer === true) {
+                loans.sort((a: LendingApi_Loan, b: LendingApi_Loan) => {
+                    return a.loanTerms.interestRate - b.loanTerms.interestRate
+                });
+            }
+
+            return loans.slice(0, 50);      // MF: To return max 50 loans
         } catch (err: any) {
             throw err;
         }
@@ -133,4 +145,7 @@ class LendingApi implements ILendingApi {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { LendingApi, LendingApi_Loan };
+export {
+    LendingApi,
+    LendingApi_Loan
+};

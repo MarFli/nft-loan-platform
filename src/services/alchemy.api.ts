@@ -66,8 +66,8 @@ class AlchemyApi implements IAlchemyApi {
     //--------------------------
     // Public Functions
     //--------------------------
-    public async alchemyApi_getNftsForOwner(nftAddr: string): Promise<AlchemyApi_OwnerNfts> {
-        const response: OwnedNftsResponse = await this.alchemyObj.nft.getNftsForOwner(nftAddr);
+    public async alchemyApi_getNftsForOwner(userAddr: string): Promise<AlchemyApi_OwnerNfts> {
+        const response: OwnedNftsResponse = await this.alchemyObj.nft.getNftsForOwner(userAddr);
 
         const numOfNfts: number = Number(response["totalCount"]);
         let nftArr: AlchemyApi_Nft[] = [];
@@ -94,4 +94,7 @@ class AlchemyApi implements IAlchemyApi {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { AlchemyApi, AlchemyApi_OwnerNfts };
+export {
+    AlchemyApi,
+    AlchemyApi_OwnerNfts
+};

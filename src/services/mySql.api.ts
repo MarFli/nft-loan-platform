@@ -28,7 +28,7 @@ interface MySqlApi_Nft extends RowDataPacket {
     id: number;
     address: string;
     token_id: string;
-    owner_user_id: string;
+    owner_user_id: number;
     loan: boolean;
     expired: boolean;
 }
@@ -36,6 +36,7 @@ interface MySqlApi_Nft extends RowDataPacket {
 interface MySqlApi_NftCheck extends RowDataPacket {
     address: string;
     token_id: string;
+    isNftInDatabase: boolean;
 }
 
 
@@ -43,6 +44,8 @@ interface MySqlApi_NftCheck extends RowDataPacket {
 // Intrerface
 //==================================================================================================
 interface IMySqlApi {
+    mySqlApi_isConnected(): Promise<boolean>;
+
     // "users" Table
     mySqlApi_createUser(userAddr: string, num_nfts: number): Promise<number>;
     mySqlApi_readUserAll(): Promise<MySqlApi_User[]>;
@@ -52,7 +55,8 @@ interface IMySqlApi {
     // "erc721_tokens" Table
     mySqlApi_createNft(nftAddr: string, tokenId: string, userId: number): Promise<number>;
     mySqlApi_readNftAll(): Promise<MySqlApi_Nft[]>;
-    mySqlApi_isNftInDatabase(nftAddr: string, tokenId: string): Promise<boolean>;
+    mySqlApi_readNft(nftId: number): Promise<MySqlApi_Nft[]>;
+    mySqlApi_isNftInDatabase(nftAddr: string, tokenId: string): Promise<MySqlApi_NftCheck>;
 }
 
 
@@ -67,7 +71,7 @@ class MySqlApi implements IMySqlApi {
     protected user: string;
     protected password: string;
     protected database: string;     // MF: Might be string[] if we will have multiple databases
-    protected pool: Pool
+    protected pool: Pool;
 
 
     //--------------------------
@@ -95,6 +99,21 @@ class MySqlApi implements IMySqlApi {
     //--------------------------
     // Public Functions
     //--------------------------
+    public mySqlApi_isConnected(): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.pool.query<OkPacket>(
+                `SELECT 1`,
+                (error, results) => {
+                    if (error) {
+                        reject(false);
+                    } else {
+                        resolve(true);
+                    }
+                }
+            );
+        });
+    }
+
     // "users" Table
     public mySqlApi_createUser(userAddr: string, num_nfts: number): Promise<number> {
         return new Promise((resolve, reject) => {
@@ -115,7 +134,7 @@ class MySqlApi implements IMySqlApi {
     public mySqlApi_readUserAll(): Promise<MySqlApi_User[]> {
         return new Promise((resolve, reject) => {
             this.pool.query<MySqlApi_User[]>(
-                "SELECT * FROM users;",
+                `SELECT * FROM users;`,
                 (error, results) => {
                     if (error) {
                         reject(error);
@@ -130,14 +149,14 @@ class MySqlApi implements IMySqlApi {
     public mySqlApi_readUser(userId: number): Promise<MySqlApi_User[]> {
         return new Promise((resolve, reject) => {
             this.pool.query<MySqlApi_User[]>(
-                "SELECT * FROM users WHERE id = ?;",
+                `SELECT * FROM users WHERE id = ?;`,
                 [userId],
                 (error, results) => {
                     if (error) {
                         reject(error);
                     } else {
                         if (results.length === 0) {
-                            reject({message: `User with an id '${userId}' doesn't exist`})
+                            reject({ message: `User with an id '${userId}' doesn't exist` })
                         } else {
                             resolve(results);
                         }
@@ -195,7 +214,7 @@ class MySqlApi implements IMySqlApi {
     public mySqlApi_readNftAll(): Promise<MySqlApi_Nft[]> {
         return new Promise((resolve, reject) => {
             this.pool.query<MySqlApi_Nft[]>(
-                "SELECT * FROM erc721_tokens;",
+                `SELECT * FROM erc721_tokens;`,
                 (error, results) => {
                     if (error) {
                         reject(error);
@@ -207,23 +226,48 @@ class MySqlApi implements IMySqlApi {
         });
     }
 
-    public mySqlApi_isNftInDatabase(nftAddr: string, tokenId: string): Promise<boolean> {
-        let isNftInDatabase: boolean = false
+    public mySqlApi_readNft(nftId: number): Promise<MySqlApi_Nft[]> {
+        return new Promise((resolve, reject) => {
+            this.pool.query<MySqlApi_Nft[]>(
+                `SELECT * FROM erc721_tokens WHERE id = ?;`,
+                [nftId],
+                (error, results) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        if (results.length === 0) {
+                            reject({ message: `Nft with an id '${nftId}' doesn't exist` })
+                        } else {
+                            resolve(results);
+                        }
+                    }
+                }
+            );
+        });
+    }
 
+    public mySqlApi_isNftInDatabase(nftAddr: string): Promise<MySqlApi_NftCheck> {
         return new Promise((resolve, reject) => {
             this.pool.query<MySqlApi_NftCheck[]>(
                 `SELECT address, token_id FROM erc721_tokens WHERE address = ?;`,
-                [nftAddr, tokenId],
+                [nftAddr],
                 (error, results) => {
                     if (error) {
                         reject(error);
                     } else {
                         if (results.length !== 0) {
-                            if ((results[0]["address"] === nftAddr) && (results[0]["token_id"] === tokenId)) {
-                                isNftInDatabase = true;
+                            if (results[0]["token_id"] === nftAddr) {
+                                results[0]["isNftInDatabase"] = true;
                             }
+                        } else {
+                            results.push({
+                                constructor: { name: "RowDataPacket"},
+                                address: "",
+                                token_id: "",
+                                isNftInDatabase: false
+                            });
                         }
-                        resolve(isNftInDatabase);
+                        resolve(results[0]);
                     }
                 }
             );
@@ -235,4 +279,10 @@ class MySqlApi implements IMySqlApi {
 //==================================================================================================
 // Exports
 //==================================================================================================
-export { MySqlApi, MySqlApi_User, MySqlApi_UserCheck, MySqlApi_Nft };
+export {
+    MySqlApi,
+    MySqlApi_User,
+    MySqlApi_UserCheck,
+    MySqlApi_Nft,
+    MySqlApi_NftCheck
+};
