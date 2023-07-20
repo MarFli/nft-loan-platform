@@ -45,7 +45,7 @@ class Server implements IServer {
     //--------------------------
     protected dotEnv: dotenv.DotenvConfigOutput     = dotenv.config();
 
-    protected port: number                          = parseInt(process.env.PORT!);
+    protected port: number                          = Number(process.env.PORT!);
     protected app_CorsOrigin: string                = process.env.APP_CORS_ORIGIN!;
 
     protected alchemy_ApiKey: string                = process.env.ALCHEMY_API_KEY!;

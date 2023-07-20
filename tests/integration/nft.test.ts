@@ -53,8 +53,6 @@ describe("Test - Integration - 'nft' - GET", () => {
     });
 
     test("Catch err while requesting nfts using nonexisting user address", async () => {
-        const id: number = 5.6;
-
         const responseErr = await request(server.getApp())
             .get("/nft/userAddr/DUMMY")
             .expect("Content-Type", /json/)

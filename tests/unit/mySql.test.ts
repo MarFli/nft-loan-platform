@@ -77,11 +77,11 @@ describe("Test - Unit - 'MySql Database'", () => {
         let msg: string = "";
 
         try {
-            const result: MySqlApi_User[] = await mySqlApi.mySqlApi_readUser(wrongNftId);
+            const result: MySqlApi_Nft[] = await mySqlApi.mySqlApi_readNft(wrongNftId);
         } catch (err: any) {
             msg = err.message;
         }
 
-        expect(msg).toBe(`User with an id '${wrongNftId}' doesn't exist`);
+        expect(msg).toBe(`Nft with an id '${wrongNftId}' doesn't exist`);
     });
 });
