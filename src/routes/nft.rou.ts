@@ -26,15 +26,15 @@ class NftRouter implements INftRouter {
     // Propeties
     //--------------------------
     protected nftController: NftController;
-    protected usersRouter: Router;
+    protected nftRouter: Router;
 
 
     //--------------------------
     // Ctor
     //--------------------------
-    constructor(userController: NftController) {
-        this.nftController = userController;
-        this.usersRouter = Router();
+    constructor(nftController: NftController) {
+        this.nftController = nftController;
+        this.nftRouter = Router();
 
         this._configRoutes();
     }
@@ -44,13 +44,13 @@ class NftRouter implements INftRouter {
     // Private Functions
     //--------------------------
     private _configRoutes(): void {
-        this.usersRouter.get("/", (req: Request, res: Response) => {
+        this.nftRouter.get("/", (req: Request, res: Response) => {
             this.nftController.httpGetNftAll(req, res);
         });
-        this.usersRouter.get("/:nftId", (req: Request, res: Response) => {
+        this.nftRouter.get("/:nftId", (req: Request, res: Response) => {
             this.nftController.httpGetNft(req, res);
         });
-        this.usersRouter.get("/userAddr/:userAddr", (req: Request, res: Response) => {
+        this.nftRouter.get("/userAddr/:userAddr", (req: Request, res: Response) => {
             this.nftController.httpgetNftForAddrAll(req, res);
         });
     }
@@ -59,7 +59,7 @@ class NftRouter implements INftRouter {
     // Public Functions
     //--------------------------
     public getRouter(): Router {
-        return this.usersRouter;
+        return this.nftRouter;
     }
 }
 
