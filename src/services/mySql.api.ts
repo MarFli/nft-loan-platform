@@ -77,7 +77,7 @@ class MySqlApi implements IMySqlApi {
     //--------------------------
     // Ctor
     //--------------------------
-    constructor(host: string, user: string,  password: string, database: string) {
+    constructor(host: string, user: string, password: string, database: string) {
         this.host = host;
         this.user = user;
         this.password = password;
